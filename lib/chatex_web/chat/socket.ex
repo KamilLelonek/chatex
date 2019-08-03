@@ -3,8 +3,15 @@ defmodule ChatexWeb.Chat.Socket do
 
   channel "conversation:*", ChatexWeb.Chat.Channel
 
-  def connect(_params, socket, _connect_info),
-    do: {:ok, socket}
+  def connect(%{"username" => username}, socket, _connect_info),
+    do: {:ok, assign(socket, :username, username)}
 
-  def id(_socket), do: nil
+  def connect(_params, _socket, _connect_info), do: :error
+
+  def id(%{assigns: %{username: username}})
+      when is_binary(username) and
+             byte_size(username) > 0,
+      do: "conversation:#{username}"
+
+  def id(_), do: nil
 end
