@@ -20,6 +20,7 @@ config :phoenix,
   json_library: Jason
 
 config :chatex, Chatex.Domain.Repo,
+  migration_primary_key: [type: :binary_id],
   username: "postgres",
   password: "postgres",
   hostname: "localhost"
