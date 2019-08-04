@@ -1,5 +1,7 @@
 # chatex
 
+[![Build Status](https://travis-ci.org/KamilLelonek/chatex.svg?branch=master)](https://travis-ci.org/KamilLelonek/chatex)
+
 ## Installation
 
 To start your Phoenix server:
