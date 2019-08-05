@@ -1,5 +1,5 @@
 defmodule ChatexWeb.Chat.ChannelTest do
-  use Chatex.TestCase, async: true
+  use Chatex.TestCase, async: false
 
   alias ChatexWeb.Chat.{Socket, Channel}
   alias Phoenix.ChannelTest
