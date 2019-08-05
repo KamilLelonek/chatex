@@ -1,10 +1,10 @@
 defmodule Chatex.Domain do
-  alias Chatex.Domain.Message.Mutator
+  alias Chatex.Domain.Message.{Mutator, Loader}
   alias Chatex.Domain.ErrorTranslator
 
-  def messages(_conversation_id) do
-    []
-  end
+  defdelegate messages(onversation_id),
+    to: Loader,
+    as: :by_conversation_id
 
   def store_message(payload) do
     case Mutator.create(payload) do

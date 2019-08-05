@@ -25,4 +25,21 @@ defmodule Chatex.DomainTest do
       assert {:error, %{sender: ["is invalid"]}} = Domain.store_message(payload)
     end
   end
+
+  describe "messages/1" do
+    test "should load all Messages by conversation ID" do
+      conversation_id = "1"
+
+      for _ <- 1..2 do
+        :message
+        |> Factory.params_for(conversation_id: conversation_id)
+        |> Domain.store_message()
+      end
+
+      [
+        %{conversation_id: ^conversation_id},
+        %{conversation_id: ^conversation_id}
+      ] = Domain.messages(conversation_id)
+    end
+  end
 end
