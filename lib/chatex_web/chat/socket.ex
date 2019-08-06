@@ -1,6 +1,7 @@
 defmodule ChatexWeb.Chat.Socket do
   use Phoenix.Socket
 
+  channel "chat", ChatexWeb.Chat.Channel
   channel "conversation:*", ChatexWeb.Chat.Conversation.Channel
 
   def connect(%{"username" => username}, socket, _connect_info),
