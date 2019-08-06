@@ -1,4 +1,4 @@
-defmodule ChatexWeb.Chat.Channel do
+defmodule ChatexWeb.Chat.Conversation.Channel do
   use Phoenix.Channel
 
   alias Chatex.Domain
