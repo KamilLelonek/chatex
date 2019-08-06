@@ -11,7 +11,7 @@ defmodule ChatexWeb.Chat.Socket do
   def id(%{assigns: %{username: username}})
       when is_binary(username) and
              byte_size(username) > 0,
-      do: "conversation:#{username}"
+      do: "user:#{username}"
 
   def id(_), do: nil
 end
