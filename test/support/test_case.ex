@@ -11,6 +11,7 @@ defmodule Chatex.TestCase do
 
       alias ChatexWeb.Router.Helpers, as: Routes
       alias Chatex.Factory
+      alias Ecto.UUID
 
       @endpoint ChatexWeb.Endpoint
 

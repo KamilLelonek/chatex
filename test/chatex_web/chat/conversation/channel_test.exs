@@ -6,13 +6,15 @@ defmodule ChatexWeb.Chat.Conversation.ChannelTest do
   alias Chatex.Domain
 
   @username "username"
-  @conversation_id "9"
+  @conversation_id UUID.generate()
   @topic "conversation:#{@conversation_id}"
 
   setup do
     {:ok, socket} = ChannelTest.connect(Socket, %{username: @username})
+    %{id: conversation_id} = Factory.insert(:conversation)
+    topic = "conversation:" <> conversation_id
 
-    {:ok, %{socket: socket}}
+    {:ok, %{socket: socket, conversation_id: conversation_id, topic: topic}}
   end
 
   describe "join/3" do
@@ -35,40 +37,68 @@ defmodule ChatexWeb.Chat.Conversation.ChannelTest do
   end
 
   describe "send message" do
-    test "should push a Message", %{socket: socket} do
-      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, @topic)
+    test "should push a Message", %{
+      socket: socket,
+      conversation_id: conversation_id,
+      topic: topic
+    } do
+      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
 
       socket
-      |> ChannelTest.push("message:send", Factory.params_for(:message))
+      |> ChannelTest.push(
+        "message:send",
+        Factory.params_for(:plain_message, conversation_id: conversation_id)
+      )
       |> assert_reply(:ok, %{})
     end
 
-    test "should store a Message after pushing", %{socket: socket} do
-      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, @topic)
-      message = %{body: body, sender: sender} = Factory.params_for(:message)
+    test "should store a Message after pushing", %{
+      socket: socket,
+      conversation_id: conversation_id,
+      topic: topic
+    } do
+      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
+
+      message =
+        %{body: body, sender: sender} =
+        Factory.params_for(:plain_message, conversation_id: conversation_id)
 
       socket
       |> ChannelTest.push("message:send", message)
       |> assert_reply(:ok, %{})
 
-      assert [%{body: ^body, sender: ^sender}] = Domain.messages(@conversation_id)
+      assert [%{body: ^body, sender: ^sender}] = Domain.messages(conversation_id)
     end
 
-    test "should broadcast a Message after pushing", %{socket: socket} do
-      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, @topic)
-      message = %{body: body, sender: sender} = Factory.params_for(:message)
+    test "should broadcast a Message after pushing", %{
+      socket: socket,
+      conversation_id: conversation_id,
+      topic: topic
+    } do
+      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
+
+      message =
+        %{body: body, sender: sender} =
+        Factory.params_for(:plain_message, conversation_id: conversation_id)
 
       ChannelTest.push(socket, "message:send", message)
 
       assert_broadcast("message:received", %{body: ^body, sender: ^sender})
     end
 
-    test "should receive all Messages after joining", %{socket: socket} do
-      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, @topic)
-      message = %{body: body, sender: sender} = Factory.params_for(:message)
+    test "should receive all Messages after joining", %{
+      socket: socket,
+      conversation_id: conversation_id,
+      topic: topic
+    } do
+      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
+
+      message =
+        %{body: body, sender: sender} =
+        Factory.params_for(:plain_message, conversation_id: conversation_id)
 
       ChannelTest.push(socket, "message:send", message)
-      ChannelTest.subscribe_and_join(socket, Channel, @topic)
+      ChannelTest.subscribe_and_join(socket, Channel, topic)
 
       assert_push("message:all", %{body: ^body, sender: ^sender})
     end
