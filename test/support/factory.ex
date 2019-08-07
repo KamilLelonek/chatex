@@ -6,7 +6,7 @@ defmodule Chatex.Factory do
 
   def message_factory do
     %Message{
-      conversation_id: sequence(:conversation_id, &to_string(&1)),
+      conversation: build(:conversation),
       body: "Hello!",
       sender: sequence(:sender, &"username#{&1}")
     }

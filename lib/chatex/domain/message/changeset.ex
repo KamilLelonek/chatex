@@ -10,5 +10,6 @@ defmodule Chatex.Domain.Message.Changeset do
     %Schema{}
     |> cast(params, @params_required ++ @params_optional)
     |> validate_required(@params_required)
+    |> foreign_key_constraint(:conversation_id, name: :messages_conversation_id_fkey)
   end
 end
