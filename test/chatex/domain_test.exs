@@ -5,7 +5,7 @@ defmodule Chatex.DomainTest do
 
   describe "store_message/1" do
     test "should store and return a Message" do
-      payload = Factory.params_for(:message)
+      payload = Factory.params_with_assocs(:message)
 
       assert {
                :ok,
@@ -28,10 +28,10 @@ defmodule Chatex.DomainTest do
 
   describe "messages/1" do
     test "should load all Messages by conversation ID" do
-      conversation_id = "1"
+      %{id: conversation_id} = Factory.insert(:conversation)
 
       for _ <- 1..2 do
-        :message
+        :plain_message
         |> Factory.params_for(conversation_id: conversation_id)
         |> Domain.store_message()
       end
