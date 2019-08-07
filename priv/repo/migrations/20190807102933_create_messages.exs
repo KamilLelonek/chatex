@@ -5,7 +5,7 @@ defmodule Chatex.Domain.Repo.Migrations.CreateMessages do
 
   def change do
     create table(@table) do
-      add :conversation_id, :string, null: false
+      add :conversation_id, references(:conversations, on_delete: :delete_all)
       add :body, :text, null: false
       add :sender, :string, null: false
 
