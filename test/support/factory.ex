@@ -5,8 +5,14 @@ defmodule Chatex.Factory do
   alias Chatex.Domain.Conversation.Schema, as: Conversation
 
   def message_factory do
+    struct!(
+      plain_message_factory(),
+      conversation: build(:conversation)
+    )
+  end
+
+  def plain_message_factory do
     %Message{
-      conversation: build(:conversation),
       body: "Hello!",
       sender: sequence(:sender, &"username#{&1}")
     }
