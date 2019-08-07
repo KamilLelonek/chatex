@@ -3,6 +3,8 @@ defmodule Chatex.DomainTest do
 
   alias Chatex.Domain
 
+  @member "Kamil"
+
   describe "store_message/1" do
     test "should store and return a Message" do
       payload = Factory.params_with_assocs(:message)
@@ -40,6 +42,50 @@ defmodule Chatex.DomainTest do
         %{conversation_id: ^conversation_id},
         %{conversation_id: ^conversation_id}
       ] = Domain.messages(conversation_id)
+    end
+  end
+
+  describe "start_conversation/1" do
+    test "should start a new Conversation" do
+      payload = Factory.params_for(:conversation)
+
+      assert {
+               :ok,
+               %Chatex.Domain.Conversation.Schema{
+                 creator: _,
+                 id: _,
+                 inserted_at: _,
+                 members: [],
+                 messages: _,
+                 updated_at: _
+               }
+             } = Domain.start_conversation(payload)
+    end
+
+    test "should not start a new Conversation" do
+      payload = Factory.params_for(:conversation, members: nil)
+
+      assert {:error, %{members: ["can't be blank"]}} = Domain.start_conversation(payload)
+    end
+  end
+
+  describe "invited?/2" do
+    test "should verify whether a member was invited" do
+      %{id: conversation_id} = Factory.insert(:conversation, members: [@member])
+
+      assert Domain.invited?(conversation_id, @member)
+    end
+
+    test "not should verify whether a member was invited when Conversation doesn't exist" do
+      refute Domain.invited?(UUID.generate(), @member)
+    end
+
+    test "not should verify whether a member was invited when Conversation exists" do
+      refute Domain.invited?(UUID.generate(), @member)
+
+      %{id: conversation_id} = Factory.insert(:conversation, members: [@member])
+
+      refute Domain.invited?(conversation_id, "member")
     end
   end
 end
