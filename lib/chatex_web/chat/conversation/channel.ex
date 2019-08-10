@@ -8,13 +8,22 @@ defmodule ChatexWeb.Chat.Conversation.Channel do
         _payload,
         socket = %{assigns: %{username: username}}
       ) do
-    send(self(), :after_join)
-
-    {:ok, %{conversation_id: conversation_id, username: username}, socket}
+    conversation_id
+    |> Domain.invited?(username)
+    |> maybe_join(socket, conversation_id, username)
   end
 
   def join(_topic, _params, _socket),
     do: {:error, %{reason: "unauthorized"}}
+
+  defp maybe_join(false, _socket, _conversation_id, _username),
+    do: {:error, %{reason: "unauthorized"}}
+
+  defp maybe_join(true, socket, conversation_id, username) do
+    send(self(), :after_join)
+
+    {:ok, %{conversation_id: conversation_id, username: username}, socket}
+  end
 
   def handle_in("message:send", payload, socket = %{topic: "conversation:" <> conversation_id}) do
     with payload <- Map.put(payload, "conversation_id", conversation_id),

@@ -6,12 +6,10 @@ defmodule ChatexWeb.Chat.Conversation.ChannelTest do
   alias Chatex.Domain
 
   @username "username"
-  @conversation_id UUID.generate()
-  @topic "conversation:#{@conversation_id}"
 
   setup do
     {:ok, socket} = ChannelTest.connect(Socket, %{username: @username})
-    %{id: conversation_id} = Factory.insert(:conversation)
+    %{id: conversation_id} = Factory.insert(:conversation, members: [@username])
     topic = "conversation:" <> conversation_id
 
     {:ok, %{socket: socket, conversation_id: conversation_id, topic: topic}}
@@ -30,9 +28,20 @@ defmodule ChatexWeb.Chat.Conversation.ChannelTest do
       assert {:error, %{reason: "unauthorized"}} = ChannelTest.join(socket, Channel, "topic")
     end
 
-    test "should join a conversation", %{socket: socket} do
-      assert {:ok, %{conversation_id: @conversation_id, username: @username}, _socket} =
-               ChannelTest.subscribe_and_join(socket, Channel, @topic)
+    test "should not join a Conversation when not invited", %{topic: topic} do
+      {:ok, socket} = ChannelTest.connect(Socket, %{username: "Kamil"})
+
+      assert {:error, %{reason: "unauthorized"}} =
+               ChannelTest.subscribe_and_join(socket, Channel, topic)
+    end
+
+    test "should join a Conversation", %{
+      socket: socket,
+      conversation_id: conversation_id,
+      topic: topic
+    } do
+      assert {:ok, %{conversation_id: ^conversation_id, username: @username}, _socket} =
+               ChannelTest.subscribe_and_join(socket, Channel, topic)
     end
   end
 
