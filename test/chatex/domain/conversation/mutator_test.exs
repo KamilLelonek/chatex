@@ -24,5 +24,13 @@ defmodule Chatex.Domain.Conversation.MutatorTest do
       assert {:error, changeset} = Mutator.create(params)
       assert %{creator: ["can't be blank"]} == ErrorTranslator.call(changeset)
     end
+
+    test "should not create the same Conversation twice" do
+      params = Factory.params_for(:conversation)
+
+      Mutator.create(params)
+      assert {:error, changeset} = Mutator.create(params)
+      assert %{members_creator: ["has already been taken"]} == ErrorTranslator.call(changeset)
+    end
   end
 end

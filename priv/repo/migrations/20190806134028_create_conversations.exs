@@ -10,5 +10,7 @@ defmodule Chatex.Domain.Repo.Migrations.CreateConversations do
 
       timestamps()
     end
+
+    create unique_index(@table, [:members, :creator])
   end
 end
