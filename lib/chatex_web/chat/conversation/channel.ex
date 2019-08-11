@@ -37,6 +37,7 @@ defmodule ChatexWeb.Chat.Conversation.Channel do
   end
 
   def handle_info(:after_join, socket = %{topic: "conversation:" <> conversation_id}) do
+    # NOTE: consider sending all mesages at once or in batches
     Enum.each(
       Domain.messages(conversation_id),
       &push(socket, "message:all", &1)
