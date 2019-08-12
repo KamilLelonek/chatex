@@ -3,6 +3,7 @@ defmodule Chatex.Factory do
 
   alias Chatex.Domain.Message.Schema, as: Message
   alias Chatex.Domain.Conversation.Schema, as: Conversation
+  alias Chatex.Domain.View.Schema, as: View
 
   def message_factory do
     struct!(
@@ -18,10 +19,23 @@ defmodule Chatex.Factory do
     }
   end
 
+  def view_factory do
+    struct!(
+      plain_view_factory(),
+      message: build(:message)
+    )
+  end
+
+  def plain_view_factory do
+    %View{
+      reader: sequence(:reader, &"username#{&1}")
+    }
+  end
+
   def conversation_factory do
     %Conversation{
       members: [],
-      creator: sequence(:sender, &"username#{&1}")
+      creator: sequence(:creator, &"username#{&1}")
     }
   end
 end
