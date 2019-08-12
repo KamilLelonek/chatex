@@ -9,19 +9,18 @@ defmodule Chatex.Domain do
     to: MessageLoader,
     as: :by_conversation_id
 
-  def store_message(payload) do
-    case MessageMutator.create(payload) do
-      {:ok, message} -> {:ok, message}
-      {:error, changeset} -> {:error, ErrorTranslator.call(changeset)}
-    end
-  end
+  def store_message(payload),
+    do: create(MessageMutator, payload)
 
   defdelegate invited?(conversation_id, member),
     to: ConversationLoader,
     as: :member_allowed?
 
-  def start_conversation(payload) do
-    case ConversationMutator.create(payload) do
+  def start_conversation(payload),
+    do: create(ConversationMutator, payload)
+
+  defp create(mutator, payload) do
+    case mutator.create(payload) do
       {:ok, message} -> {:ok, message}
       {:error, changeset} -> {:error, ErrorTranslator.call(changeset)}
     end
