@@ -3,6 +3,13 @@ defmodule ChatexWeb.Chat.Conversation.Channel do
 
   alias Chatex.Domain
 
+  intercept ["message:seen"]
+
+  # NOTE: it may be a good idea to introduce additional validation
+  # i.e. whether a user is authorized to perform a specific action
+  # e.g. sending or reading a message, even though it should be
+  # already handled by the entire Channel itself.
+
   def join(
         "conversation:" <> conversation_id,
         _payload,
