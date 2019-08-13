@@ -26,6 +26,12 @@ defmodule Chatex.DomainTest do
 
       assert {:error, %{sender: ["is invalid"]}} = Domain.store_message(payload)
     end
+
+    test "should not store a Message for a non-exitent Conversation" do
+      payload = Factory.params_for(:message, conversation_id: UUID.generate())
+
+      assert {:error, %{conversation_id: ["does not exist"]}} = Domain.store_message(payload)
+    end
   end
 
   describe "messages/1" do
@@ -115,13 +121,13 @@ defmodule Chatex.DomainTest do
     end
 
     test "should not mark Message as read without the given Message ID" do
-      payload = %{reader: reader} = Factory.params_for(:view)
+      payload = Factory.params_for(:view)
 
       assert {:error, %{message_id: ["can't be blank"]}} = Domain.read_message(payload)
     end
 
     test "should not mark a non-exitent Message as read" do
-      payload = %{reader: reader} = Factory.params_for(:view, message_id: UUID.generate())
+      payload = Factory.params_for(:view, message_id: UUID.generate())
 
       assert {:error, %{message_id: ["does not exist"]}} = Domain.read_message(payload)
     end
