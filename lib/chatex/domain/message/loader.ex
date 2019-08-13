@@ -10,7 +10,8 @@ defmodule Chatex.Domain.Message.Loader do
   def by_conversation_id(conversation_id) do
     Repo.all(
       from Message,
-        where: [conversation_id: ^conversation_id]
+        where: [conversation_id: ^conversation_id],
+        preload: :views
     )
   end
 end
