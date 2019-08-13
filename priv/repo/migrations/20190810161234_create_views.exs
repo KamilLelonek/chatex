@@ -8,7 +8,7 @@ defmodule Chatex.Domain.Repo.Migrations.CreateViews do
       add :message_id, references(:messages, on_delete: :delete_all), null: false
       add :reader, :string, null: false
 
-      timestamps()
+      timestamps(updated_at: false)
     end
 
     create unique_index(@table, [:message_id, :reader])

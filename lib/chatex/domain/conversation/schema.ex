@@ -9,6 +9,6 @@ defmodule Chatex.Domain.Conversation.Schema do
 
     has_many :messages, Message, foreign_key: :id
 
-    timestamps()
+    timestamps(updated_at: false)
   end
 end

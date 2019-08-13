@@ -15,8 +15,7 @@ defmodule Chatex.DomainTest do
                  body: _,
                  conversation_id: _,
                  sender: _,
-                 inserted_at: _,
-                 updated_at: _
+                 inserted_at: _
                }
              } = Domain.store_message(payload)
     end
@@ -62,8 +61,7 @@ defmodule Chatex.DomainTest do
                  id: _,
                  inserted_at: _,
                  members: [],
-                 messages: _,
-                 updated_at: _
+                 messages: _
                }
              } = Domain.start_conversation(payload)
     end

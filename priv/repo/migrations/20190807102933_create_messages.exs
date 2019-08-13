@@ -9,7 +9,7 @@ defmodule Chatex.Domain.Repo.Migrations.CreateMessages do
       add :body, :text, null: false
       add :sender, :string, null: false
 
-      timestamps()
+      timestamps(updated_at: false)
     end
 
     create index(@table, :conversation_id)

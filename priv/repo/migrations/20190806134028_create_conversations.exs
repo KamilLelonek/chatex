@@ -8,7 +8,7 @@ defmodule Chatex.Domain.Repo.Migrations.CreateConversations do
       add :members, {:array, :string}, null: false, default: []
       add :creator, :string, null: false
 
-      timestamps()
+      timestamps(updated_at: false)
     end
 
     create unique_index(@table, [:members, :creator])

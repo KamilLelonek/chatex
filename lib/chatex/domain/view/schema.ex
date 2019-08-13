@@ -8,6 +8,6 @@ defmodule Chatex.Domain.View.Schema do
 
     belongs_to :message, Message
 
-    timestamps()
+    timestamps(updated_at: false)
   end
 end
