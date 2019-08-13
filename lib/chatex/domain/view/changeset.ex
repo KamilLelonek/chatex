@@ -13,5 +13,6 @@ defmodule Chatex.Domain.View.Changeset do
     |> unique_constraint(:message_reader,
       name: :views_message_id_reader_index
     )
+    |> foreign_key_constraint(:message_id)
   end
 end

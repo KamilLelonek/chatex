@@ -88,4 +88,42 @@ defmodule Chatex.DomainTest do
       refute Domain.invited?(conversation_id, "member")
     end
   end
+
+  describe "views/1" do
+    test "should load all Views for a particular Message" do
+      %{id: message_id} = Factory.insert(:message)
+
+      for _ <- 1..2 do
+        :plain_view
+        |> Factory.params_for(message_id: message_id)
+        |> Domain.read_message()
+      end
+
+      [
+        %{message_id: ^message_id},
+        %{message_id: ^message_id}
+      ] = Domain.views(message_id)
+    end
+  end
+
+  describe "read_message/1" do
+    test "should mark Message as read" do
+      %{id: message_id} = Factory.insert(:message)
+      payload = %{reader: reader} = Factory.params_for(:view, message_id: message_id)
+
+      assert {:ok, %{reader: ^reader}} = Domain.read_message(payload)
+    end
+
+    test "should not mark Message as read without the given Message ID" do
+      payload = %{reader: reader} = Factory.params_for(:view)
+
+      assert {:error, %{message_id: ["can't be blank"]}} = Domain.read_message(payload)
+    end
+
+    test "should not mark a non-exitent Message as read" do
+      payload = %{reader: reader} = Factory.params_for(:view, message_id: UUID.generate())
+
+      assert {:error, %{message_id: ["does not exist"]}} = Domain.read_message(payload)
+    end
+  end
 end
