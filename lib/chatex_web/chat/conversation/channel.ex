@@ -32,8 +32,12 @@ defmodule ChatexWeb.Chat.Conversation.Channel do
     {:ok, %{conversation_id: conversation_id, username: username}, socket}
   end
 
-  def handle_in("message:send", payload, socket = %{topic: "conversation:" <> conversation_id}) do
-    with payload <- Map.put(payload, "conversation_id", conversation_id),
+  def handle_in(
+        "message:send",
+        %{"body" => body},
+        socket = %{topic: "conversation:" <> conversation_id, assigns: %{username: username}}
+      ) do
+    with payload <- %{"conversation_id" => conversation_id, "sender" => username, "body" => body},
          {:ok, message} <- Domain.store_message(payload),
          :ok <- broadcast(socket, "message:received", message) do
       {:reply, :ok, socket}

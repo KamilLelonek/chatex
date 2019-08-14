@@ -69,14 +69,13 @@ defmodule ChatexWeb.Chat.Conversation.ChannelTest do
       {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
 
       message =
-        %{body: body, sender: sender} =
-        Factory.params_for(:plain_message, conversation_id: conversation_id)
+        %{body: body} = Factory.params_for(:plain_message, conversation_id: conversation_id)
 
       socket
       |> ChannelTest.push("message:send", message)
       |> assert_reply(:ok, %{})
 
-      assert [%{body: ^body, sender: ^sender}] = Domain.messages(conversation_id)
+      assert [%{body: ^body, sender: @username}] = Domain.messages(conversation_id)
     end
 
     test "should broadcast a Message after pushing", %{
@@ -87,12 +86,11 @@ defmodule ChatexWeb.Chat.Conversation.ChannelTest do
       {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
 
       message =
-        %{body: body, sender: sender} =
-        Factory.params_for(:plain_message, conversation_id: conversation_id)
+        %{body: body} = Factory.params_for(:plain_message, conversation_id: conversation_id)
 
       ChannelTest.push(socket, "message:send", message)
 
-      assert_broadcast("message:received", %{body: ^body, sender: ^sender})
+      assert_broadcast("message:received", %{body: ^body, sender: @username})
     end
 
     test "should receive all Messages after joining", %{
@@ -103,13 +101,12 @@ defmodule ChatexWeb.Chat.Conversation.ChannelTest do
       {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
 
       message =
-        %{body: body, sender: sender} =
-        Factory.params_for(:plain_message, conversation_id: conversation_id)
+        %{body: body} = Factory.params_for(:plain_message, conversation_id: conversation_id)
 
       ChannelTest.push(socket, "message:send", message)
       ChannelTest.subscribe_and_join(socket, Channel, topic)
 
-      assert_push("message:all", %{body: ^body, sender: ^sender})
+      assert_push("message:all", %{body: ^body, sender: @username})
     end
   end
 

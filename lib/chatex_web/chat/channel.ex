@@ -16,8 +16,9 @@ defmodule ChatexWeb.Chat.Channel do
   def join(_topic, _params, _socket),
     do: {:error, %{reason: "unauthorized"}}
 
-  def handle_in("conversation:invite", payload, socket) do
-    with {:ok, conversation} <- Domain.start_conversation(payload),
+  def handle_in("conversation:invite", payload, socket = %{assigns: %{username: username}}) do
+    with payload <- update_in(payload["members"], &(&1 ++ [username])),
+         {:ok, conversation} <- Domain.start_conversation(payload),
          :ok <- broadcast(socket, "conversation:invited", conversation) do
       {:reply, {:ok, conversation}, socket}
     else
