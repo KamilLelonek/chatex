@@ -43,12 +43,29 @@ defmodule ChatexWeb.Chat.Conversation.Channel do
     end
   end
 
+  def handle_in("message:read", payload, socket = %{assigns: %{username: username}}) do
+    with payload <- Map.put(payload, "reader", username),
+         {:ok, message} <- Domain.read_message(payload),
+         :ok <- broadcast(socket, "message:seen", message) do
+      {:reply, :ok, socket}
+    else
+      {:error, response} ->
+        {:reply, {:error, response}, socket}
+    end
+  end
+
   def handle_info(:after_join, socket = %{topic: "conversation:" <> conversation_id}) do
     # NOTE: consider sending all mesages at once or in batches
     Enum.each(
       Domain.messages(conversation_id),
       &push(socket, "message:all", &1)
     )
+
+    {:noreply, socket}
+  end
+
+  def handle_out("message:seen", %{message_id: message_id}, socket) do
+    push(socket, "message:views", %{views: Domain.views(message_id)})
 
     {:noreply, socket}
   end

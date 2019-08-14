@@ -112,4 +112,34 @@ defmodule ChatexWeb.Chat.Conversation.ChannelTest do
       assert_push("message:all", %{body: ^body, sender: ^sender})
     end
   end
+
+  describe "read message" do
+    test "should mark a Message as seen", %{
+      socket: socket,
+      conversation_id: conversation_id,
+      topic: topic
+    } do
+      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
+      %{id: message_id} = Factory.insert(:plain_message, conversation_id: conversation_id)
+
+      socket
+      |> ChannelTest.push("message:read", %{message_id: message_id})
+      |> assert_reply(:ok, %{})
+
+      assert [%{reader: @username, message_id: ^message_id}] = Domain.views(message_id)
+    end
+
+    test "should broadcast a View", %{
+      socket: socket,
+      conversation_id: conversation_id,
+      topic: topic
+    } do
+      {:ok, _, socket} = ChannelTest.subscribe_and_join(socket, Channel, topic)
+      %{id: message_id} = Factory.insert(:plain_message, conversation_id: conversation_id)
+
+      ChannelTest.push(socket, "message:read", %{message_id: message_id})
+
+      assert_push("message:views", %{views: [%{reader: @username, message_id: ^message_id}]})
+    end
+  end
 end
