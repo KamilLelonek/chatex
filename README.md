@@ -40,11 +40,11 @@ To prepare you application for production, you can use [`Dockerfile`](Dockerfile
 
 To build a `Docker` image, execute the following command:
 
-    docker build . -t car_pooling:latest
+    docker build . -t chatex:latest
 
 Once built, you are able to push it to a remote repository as:
 
-    docker push car_pooling:latest
+    docker push chatex:latest
 
 It assumes you are authorized and logged in to a [`Docker` registry](https://docs.docker.com/registry/).
 
